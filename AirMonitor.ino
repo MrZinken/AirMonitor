@@ -79,21 +79,21 @@
 
    PmResult pm = sds.queryPm();
    if (pm.isOk()) {
-     Serial.print("PM2.5 = ");
+     /*Serial.print("PM2.5 = ");
      Serial.print(pm.pm25);
      Serial.print(", PM10 = ");
      Serial.println(pm.pm10);
      Serial.print("Temp: ");
-     Serial.println(bme.readTemperature());
+     Serial.println(bme.readTemperature());*/
 
      // if you want to just print the measured values, you can use toString() method as well
-     Serial.println(pm.toString());
+     //Serial.println(pm.toString());
 
      ThingSpeak.setField(1, pm.pm25);
      ThingSpeak.setField(2, pm.pm10);
      ThingSpeak.setField(3, bme.readHumidity());
      ThingSpeak.setField(4, bme.readTemperature());
-     ThingSpeak.setField(5, bme.readPressure());
+     ThingSpeak.setField(5, bme.readPressure()/100.0F);
      
 
      int x = ThingSpeak.writeFields(myChannelNumber, myWriteAPIKey);
