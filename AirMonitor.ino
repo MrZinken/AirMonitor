@@ -4,6 +4,8 @@
  #include "SdsDustSensor.h"
  #include "ThingSpeak.h"
  #include <ESP8266WiFi.h>
+ #include <Adafruit_Sensor.h>
+#include <Adafruit_BME280.h>
 
  int rxPin = D3;
  int txPin = D4;
