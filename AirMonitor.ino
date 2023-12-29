@@ -18,12 +18,12 @@
  Adafruit_BME280 bme; // I2C
 
  const char* ssid = "WG_Fit_GmbH_EXT";   // your network SSID (name)
- const char* pass = "Liebdochwenduwillst18";   // your network password
+ const char* pass = "***************";   // your network password
 
  WiFiClient  client;
 
  unsigned long myChannelNumber = 1933391;
- const char * myWriteAPIKey = "X9L20E60JG38677Y";
+ const char * myWriteAPIKey = "***********";
 
  void setup() {
 
