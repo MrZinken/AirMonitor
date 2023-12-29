@@ -12,12 +12,12 @@
  SdsDustSensor sds(rxPin, txPin);
 
  const char* ssid = "WG_Fit_GmbH_EXT";   // your network SSID (name)
- const char* pass = "Liebdochwenduwillst18";   // your network password
+ const char* pass = "***********";   // your network password
 
  WiFiClient  client;
 
  unsigned long myChannelNumber = 942047;
- const char * myWriteAPIKey = "I3SVACTGQ7M2KPEB";
+ const char * myWriteAPIKey = "********";
 
  void setup() {
 
