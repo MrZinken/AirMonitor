@@ -1,6 +1,3 @@
-
-
-
 /**
  * Dust Sensor with ESP8266 and ThingSpeak upload (SDS011)
  */
@@ -14,33 +11,40 @@
 
 int rxPin = D3;
 int txPin = D4;
-const int sleeptime = 1000 * 60 * 30;
+const int sleeptime = 1000 * 60 * 10;
 
 const char* ssid = "WG_Fit_GmbH_EXT";        // your network SSID (name)
-const char* pass = "Liebdochwenduwillst18";  // your network password
+const char* pass = "***********";  // your network password
 
 unsigned long myChannelNumber = 1933391;
-const char* myWriteAPIKey = "X9L20E60JG38677Y";
+const char* myWriteAPIKey = "**********";
 
 WiFiClient client;
 SdsDustSensor sds(rxPin, txPin);
 SCD4x mySensor;
 Adafruit_BME280 bme;
 
+//#define DEBUG    // Herauskommentieren, wenn keine serielle Ausgabe erwünscht wird
 
-
+#ifdef DEBUG
+  #define debug_print(x)  Serial.print(x)
+  #define debug_println(x)  Serial.println(x)
+  #define debug_begin(x) Serial.begin(x)
+#else
+  #define debug_print(x)
+  #define debug_println(x) 
+  #define debug_begin(x)
+#endif
 
 void setup() {
 
-  Serial.begin(9600);
-  Serial.setTimeout(2000);
+  debug_begin(9600);
+ 
 
+  sds.begin();
   Wire.begin(D6, D5);
   bme.begin(0x76);
   mySensor.begin(0x62); //   mySensor.begin(0x62);
-
-  // Wait for serial to initialize.
-  while (!Serial) {}
 
 
   WiFi.mode(WIFI_STA);
@@ -48,8 +52,8 @@ void setup() {
 
   // Connect or reconnect to WiFi
   if (WiFi.status() != WL_CONNECTED) {
-    Serial.print("Attempting to connect to SSID: ");
-    Serial.println(ssid);
+    debug_print("Attempting to connect to SSID: ");
+    debug_println(ssid);
 
     int attempts = 0;
     while (attempts != 5) {
@@ -59,27 +63,24 @@ void setup() {
       attempts++;
       // Serial.println(attempts);
       if (WiFi.status() == WL_CONNECTED) {
-        Serial.println("\nConnected.");
+        debug_println("\nConnected.");
         break;
       } else {
-        Serial.println("Could not connect to Wifi. Attempts: " + String(attempts) + "/5");
+        debug_println("Could not connect to Wifi. Attempts: " + String(attempts) + "/5");
       }
     }
   }
 }
 
+
 void loop() {
 
-
-  
-  sds.begin();
-  sds.wakeup();
-
+  //WakeUp Sds Sensor
+  sds.wakeup();  
   delay(10000); // waiting 15 seconds before measuring
   PmResult pm = sds.queryPm();
 
-
-
+  //Messure and fill message
   ThingSpeak.setField(1, pm.pm25);
   ThingSpeak.setField(2, pm.pm10);
   delay(500);
@@ -88,21 +89,21 @@ void loop() {
   ThingSpeak.setField(5, bme.readPressure() / 100.0F);
   delay(500);
   ThingSpeak.setField(6, mySensor.getCO2());
-
+  //Send message
   int x = ThingSpeak.writeFields(myChannelNumber, myWriteAPIKey);
   if (x == 200) {
-    Serial.println("Channel update successful.");
+    debug_println("Channel update successful.");
   } else {
-    Serial.println("Problem updating channel. HTTP error code " + String(x));
+    debug_println("Problem updating channel. HTTP error code " + String(x));
   }
 
-
-
+  //Sds Sensor sleep
   WorkingStateResult state = sds.sleep();
   if (state.isWorking()) {
-    Serial.println("Problem with sleeping the sensor.");
+    debug_println("Problem with sleeping the sensor.");
   } else {
-    Serial.println("\nSensor is sleeping");
+    debug_println("\nSensor is sleeping");
   }
+  //wait before next messurement
   delay(sleeptime);
 }
